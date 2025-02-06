@@ -3,8 +3,8 @@ package org.example.lesson_6;
 import java.util.Random;
 
 class Animal {
-    String name;
-    static int count = 0;
+    protected String name;
+    private static int count = 0;
 
     public Animal(String name) {
         this.name = name;
@@ -21,50 +21,6 @@ class Animal {
 
     public static void showCount() {
         System.out.println("Количество животных: " + count);
-    }
-}
-
-class Cat extends Animal {
-    static int catCount = 0;
-    static int foodCountInBowl = 0;
-    boolean satiety;
-
-    public Cat(String name) {
-        super(name);
-        this.satiety = false;
-        catCount++;
-    }
-
-    public static void showCatCount() {
-        System.out.println("Количество кошек: " + catCount);
-    }
-
-    public static void fillBowl(int foodCount) {
-        foodCountInBowl = foodCountInBowl + foodCount;
-    }
-
-    @Override
-    public void run(int distanceRun) {
-        if (distanceRun >= 0 && distanceRun <= 200) {
-            System.out.println(name + " пробежал " + distanceRun + " м.");
-        } else {
-            System.out.println(name + " не может пробежать " + distanceRun + " м.");
-        }
-    }
-
-    @Override
-    public void swim(int distanceSwim) {
-        System.out.println(name + " не умеет плавать");
-    }
-
-    public void catEat(int needFood) {
-        if (foodCountInBowl - needFood >= 0) {
-            foodCountInBowl = foodCountInBowl - needFood;
-            this.satiety = true;
-            System.out.println("Кот " + name + " сыт");
-        } else {
-            System.out.println("Кот " + name + " голоден");
-        }
     }
 }
 
@@ -99,6 +55,65 @@ class Dog extends Animal {
     }
 }
 
+class Cat extends Animal {
+    private static int catCount = 0;
+    private boolean satiety;
+
+    public Cat(String name) {
+        super(name);
+        this.satiety = false;
+        catCount++;
+    }
+
+    public static void showCatCount() {
+        System.out.println("Количество кошек: " + catCount);
+    }
+
+    @Override
+    public void run(int distanceRun) {
+        if (distanceRun >= 0 && distanceRun <= 200) {
+            System.out.println(name + " пробежал " + distanceRun + " м.");
+        } else {
+            System.out.println(name + " не может пробежать " + distanceRun + " м.");
+        }
+    }
+
+    @Override
+    public void swim(int distanceSwim) {
+        System.out.println(name + " не умеет плавать");
+    }
+
+    public void catEat(int needFood, CatBowl bowl) {
+        if (bowl.getFoodCountInBowl() - needFood >= 0) {
+            bowl.reduceFoodCount(needFood);
+            this.satiety = true;
+            System.out.println("Кот " + name + " сыт");
+        } else {
+            System.out.println("Кот " + name + " голоден");
+        }
+    }
+}
+
+class CatBowl {
+    private int foodCountInBowl;
+
+    public CatBowl() {
+        this.foodCountInBowl = 0;
+    }
+
+    public int getFoodCountInBowl() {
+        return foodCountInBowl;
+    }
+
+    public void fillBowl(int foodCount) {
+        foodCountInBowl = foodCountInBowl + foodCount;
+    }
+
+    public void reduceFoodCount(int eatenFood) {
+        foodCountInBowl = foodCountInBowl - eatenFood;
+    }
+}
+
 public class Task01 {
     public static void main(String[] args) {
 
@@ -117,7 +132,8 @@ public class Task01 {
 
         //Расширение задачи с добавлением возможности котам кушать из миски
         Random random = new Random();
-        Cat.fillBowl(50);
+        CatBowl bowl = new CatBowl();
+        bowl.fillBowl(50);
 
         Cat[] catsArray = new Cat[5];
         catsArray[0] = new Cat("Barsik");
@@ -127,7 +143,7 @@ public class Task01 {
         catsArray[4] = new Cat("Leon");
 
         for (int i = 0; i < catsArray.length; i++) {
-            catsArray[i].catEat(random.nextInt(50));
+            catsArray[i].catEat(random.nextInt(50), bowl);
         }
     }
 }
